@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+	<annotation-driven />
+	<resources mapping="/resources/**" location="/resources/" />
+	<resources mapping="/views/**" location="/WEB-INF/views/" />
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/views/"/>
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean >
+	<beans:bean id="dataSource"	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<beans:property name="driverClassName" value="oracle.jdbc.*" />
+		<beans:property name="url" value="jdbc:oracle:thin:@localhost:1521/orcl" />
+		<beans:property name="username" value="hr" />
+		<beans:property name="password" value="hr" />
+	</beans:bean>
+	<beans:bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="annotatedClasses">
+			<beans:list>
+				<beans:value>com.timy.model.User</beans:value>
+			</beans:list>
+		</beans:property>
+		<beans:property name="hibernateProperties">
+			<beans:props>
+				<beans:prop key="hibernate.dialect">org.hibernate.dialect.Oracledialect</beans:prop>
+				<beans:prop key="hibernate.show_sql">${hibernate.show_sql}</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+	<beans:bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	 <beans:property name="sessionFactory" ref="sessionFactory"></beans:property>
+	</beans:bean>	
+	<beans:bean id="persistenceExceptionTranslationPostProcessor" 
+				class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"></beans:bean>
+	<beans:bean id="dataDao" class="com.tiny.dao.DataDAOImpl"></beans:bean>
+	<beans:bean id="dataServices" class="com.tiny.services.DataServiceImpli"></beans:bean>
+	<context:component-scan base-package="com.tiny.services" />
+</beans:beans>
